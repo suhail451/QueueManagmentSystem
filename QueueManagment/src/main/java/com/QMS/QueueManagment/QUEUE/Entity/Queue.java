@@ -3,6 +3,7 @@ package com.QMS.QueueManagment.QUEUE.Entity;
 
 import com.QMS.QueueManagment.ADMIN.Entity.Admin;
 import com.QMS.QueueManagment.TOKEN.Entity.Token;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,7 @@ public class Queue {
     private Admin admin;
 
     @OneToMany(mappedBy = "queue")
+    @JsonBackReference
     private List<Token> tokens;
 
 }

@@ -1,6 +1,7 @@
 package com.QMS.QueueManagment.TOKEN.Entity;
 
 import com.QMS.QueueManagment.QUEUE.Entity.Queue;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class Token {
 
     @ManyToOne
     @JoinColumn(name="queue_id",nullable = false)
+    @JsonManagedReference
     private Queue queue;
 
 
