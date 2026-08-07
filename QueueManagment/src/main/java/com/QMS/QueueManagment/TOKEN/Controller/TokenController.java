@@ -6,6 +6,7 @@ import com.QMS.QueueManagment.TOKEN.Service.TokenService;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,16 @@ public class TokenController {
         return new ResponseEntity<>(mytoken, HttpStatus.CREATED);
 
     }
+
+    @PatchMapping("/done/{id}")
+    public ResponseEntity<Token> markTokenDone(@PathVariable int id){
+
+       return new ResponseEntity<>(tokenService.markTokenDone(id),HttpStatus.OK);
+
+
+    }
+
+
 
 
 }

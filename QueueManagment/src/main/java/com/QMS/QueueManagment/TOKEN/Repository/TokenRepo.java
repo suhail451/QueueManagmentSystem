@@ -13,4 +13,6 @@ public interface TokenRepo extends JpaRepository<Token,Long> {
     @Query("SELECT MAX(t.tokenNo) FROM Token t WHERE t.queue.id = :queueId")
     Integer findMaxTokenNoByQueueId(@Param("queueId") Long queueId);
 
+    Token findByTokenNo(int tokenNo);
+
 }

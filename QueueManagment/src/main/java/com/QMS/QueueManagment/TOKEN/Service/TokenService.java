@@ -40,6 +40,18 @@ public class TokenService {
 
     }
 
+    public Token markTokenDone(int TokenNo){
+       Token myToken= tokenRepo.findByTokenNo(TokenNo);
+
+       if(myToken.getStatus().equals("Waiting")){
+           myToken.setStatus("Done");
+
+       }
+
+       return tokenRepo.save(myToken);
+
+    }
+
 
 
 
