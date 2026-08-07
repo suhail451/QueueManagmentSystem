@@ -21,8 +21,8 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String status;
-    private  int token_no;
+    private String status="Active";
+    private  int tokenNo;
     private Date created_at=new Date();
 
     @ManyToOne
