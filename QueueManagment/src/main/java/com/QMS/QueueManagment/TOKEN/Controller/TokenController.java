@@ -6,10 +6,9 @@ import com.QMS.QueueManagment.TOKEN.Service.TokenService;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class TokenController {
@@ -36,6 +35,29 @@ public class TokenController {
 
     }
 
+    @GetMapping("/token/{queueId}")
+    public ResponseEntity<List<Token>> tokenByQueue(@PathVariable Long queueId){
+        List<Token> list=tokenService.getTokenByQueue(queueId);
+        return new ResponseEntity<>(list,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{tokenNo}")
+    public ResponseEntity<Void>  deleteByTokenNo(@PathVariable int tokenNo){
+
+        tokenService.deleteToken(tokenNo);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+
+    }
+
+    @GetMapping("Position/{tokenId}")
+    public ResponseEntity<Long> findPosition(@PathVariable Long tokenId){
+
+        Long Position=tokenService.findPosition(tokenId);
+
+        return new ResponseEntity<>(Position,HttpStatus.OK);
+
+    }
 
 
 

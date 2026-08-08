@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 
 public interface TokenRepo extends JpaRepository<Token,Long> {
@@ -15,4 +17,8 @@ public interface TokenRepo extends JpaRepository<Token,Long> {
 
     Token findByTokenNo(int tokenNo);
 
+    List<Token> findTokenByQueueId(Long queueId);
+
+
+    long countByQueueIdAndStatusAndTokenNoLessThan(Long queueId, String status, int tokenNo);
 }

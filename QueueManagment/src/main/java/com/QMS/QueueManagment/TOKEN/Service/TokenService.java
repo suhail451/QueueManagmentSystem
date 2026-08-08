@@ -5,7 +5,10 @@ import com.QMS.QueueManagment.QUEUE.Entity.Queue;
 import com.QMS.QueueManagment.QUEUE.Repository.QueueRepo;
 import com.QMS.QueueManagment.TOKEN.Entity.Token;
 import com.QMS.QueueManagment.TOKEN.Repository.TokenRepo;
+import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TokenService {
@@ -18,6 +21,7 @@ public class TokenService {
         this.tokenRepo = tokenRepo;
     }
 
+//    Create token
     public Token createToken(Long queueId){
 
         Queue queue=queueRepo.findById(queueId)
@@ -40,6 +44,8 @@ public class TokenService {
 
     }
 
+//    Mark token done
+
     public Token markTokenDone(int TokenNo){
        Token myToken= tokenRepo.findByTokenNo(TokenNo);
 
@@ -52,6 +58,37 @@ public class TokenService {
 
     }
 
+//    Get Token
+
+    public List<Token> getTokenByQueue(Long queueId){
+
+        return tokenRepo.findTokenByQueueId(queueId);
+
+    }
+
+
+//Mark token InActive
+    public void deleteToken(int token_no){
+
+       Token mytoken =tokenRepo.findByTokenNo(token_no);
+        mytoken.setStatus("InActive");
+        tokenRepo.save(mytoken);
+
+    }
+
+//    Find Position
+    public Long findPosition(Long tokenId){
+
+        Token token = tokenRepo.findById(tokenId)
+                .orElseThrow(() -> new RuntimeException("Token not found"));
+
+
+      return  tokenRepo.countByQueueIdAndStatusAndTokenNoLessThan(
+              token.getQueue().getId(), "Waiting",token.getTokenNo());
+
+
+
+    }
 
 
 
