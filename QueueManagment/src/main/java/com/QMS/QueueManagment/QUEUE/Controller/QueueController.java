@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/v1/queue")
 public class QueueController {
 
     final QueueService queueService;
@@ -18,14 +19,20 @@ public class QueueController {
 
 
 
-    @PostMapping("/api/v1/queue/{id}")
+    @PostMapping("/{id}")
     public ResponseEntity<Queue> createQueue(@PathVariable Long id){
 
         Queue queue=queueService.createQueue(id);
         return new ResponseEntity<>(queue, HttpStatus.CREATED);
     }
 
-    @PutMapping("/api/v1/status/{id}")
+    @GetMapping("/{adminId}")
+    public ResponseEntity<Queue> getQueue(@PathVariable Long adminId){
+        Queue queue = queueService.getQueue(adminId);
+        return new ResponseEntity<>(queue, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
     public ResponseEntity<String> closeQueue(@PathVariable Long id){
 
        Boolean myStatus= queueService.closeQueue(id);
@@ -37,7 +44,7 @@ public class QueueController {
         return new ResponseEntity<>("Queue Closed",HttpStatus.OK);
     }
 
-    @DeleteMapping("/api/v1/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id){
         queueService.deleteQueue(id);
 

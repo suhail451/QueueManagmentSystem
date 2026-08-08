@@ -9,6 +9,7 @@ import org.springframework.data.repository.core.support.RepositoryMethodInvocati
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TokenService {
@@ -46,8 +47,9 @@ public class TokenService {
 
 //    Mark token done
 
-    public Token markTokenDone(int TokenNo){
-       Token myToken= tokenRepo.findByTokenNo(TokenNo);
+    public Token markTokenDone(Long tokenId){
+       Token myToken= tokenRepo.findById(tokenId)
+               .orElseThrow(()->new RuntimeException("Not found"));
 
        if(myToken.getStatus().equals("Waiting")){
            myToken.setStatus("Done");
@@ -68,11 +70,12 @@ public class TokenService {
 
 
 //Mark token InActive
-    public void deleteToken(int token_no){
+    public void markTokenInActive(Long tokenId){
 
-       Token mytoken =tokenRepo.findByTokenNo(token_no);
-        mytoken.setStatus("InActive");
-        tokenRepo.save(mytoken);
+       Token mytoken = tokenRepo.findById(tokenId)
+               .orElseThrow(() -> new RuntimeException("Token Notfound"));
+       mytoken.setStatus("InActive");
+       tokenRepo.save(mytoken);
 
     }
 

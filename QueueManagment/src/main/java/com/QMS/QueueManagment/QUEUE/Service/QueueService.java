@@ -6,8 +6,6 @@ import com.QMS.QueueManagment.QUEUE.Entity.Queue;
 import com.QMS.QueueManagment.QUEUE.Repository.QueueRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class QueueService {
 
@@ -19,37 +17,35 @@ public class QueueService {
         this.queueRepo = queueRepo;
     }
 
+//    Create Queue
     public Queue createQueue(Long adminId){
+
         Admin admin=adminService.findAdmin(adminId)
                 .orElseThrow(()-> new RuntimeException("Admin not found"));
 
         if(admin.getQueue()!=null){
             throw new RuntimeException("Queue Already exist");
-
         }
-
         Queue queue=new Queue();
         queue.setAdmin(admin);
         queue=queueRepo.save(queue);
         admin.setQueue(queue);
 
         return queue;
-
     }
 
+//    Get Queue
     public Queue getQueue(Long adminId){
 
         return queueRepo.findByAdminId(adminId)
                 .orElseThrow(()-> new RuntimeException("Queue Not found"));
-
-
     }
 
+//    Soft Delete Queue
     public Boolean closeQueue(Long queueId){
 
         Queue myQueue=queueRepo.findById(queueId)
                 .orElseThrow(()-> new RuntimeException("Queue not found"));
-
         if(myQueue.getIsOpen()== false){
 
             throw new RuntimeException("Queue is already closed");
@@ -58,14 +54,13 @@ public class QueueService {
         myQueue.setIsOpen(false);
 
         return queueRepo.save(myQueue).getIsOpen();
-
-
     }
 
+//    Delete Queue
     public void deleteQueue(Long queueId){
+
         Queue queue = queueRepo.findById(queueId)
                 .orElseThrow(() -> new RuntimeException("Queue not found"));
-
         Admin admin = queue.getAdmin();
         admin.setQueue(null);   // break the back-reference first
 

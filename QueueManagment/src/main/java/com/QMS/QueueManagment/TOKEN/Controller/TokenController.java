@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/v1/token")
 public class TokenController {
 
     final TokenService tokenService;
@@ -19,38 +20,40 @@ public class TokenController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/token/{queueId}")
+    @PostMapping("/{queueId}")
     public ResponseEntity<Token> createToken(@PathVariable Long queueId){
 
         Token mytoken=tokenService.createToken(queueId);
+
         return new ResponseEntity<>(mytoken, HttpStatus.CREATED);
-
     }
 
-    @PatchMapping("/done/{id}")
-    public ResponseEntity<Token> markTokenDone(@PathVariable int id){
 
-       return new ResponseEntity<>(tokenService.markTokenDone(id),HttpStatus.OK);
-
-
-    }
-
-    @GetMapping("/token/{queueId}")
+    @GetMapping("/{queueId}")
     public ResponseEntity<List<Token>> tokenByQueue(@PathVariable Long queueId){
         List<Token> list=tokenService.getTokenByQueue(queueId);
+
         return new ResponseEntity<>(list,HttpStatus.OK);
     }
 
-    @DeleteMapping("/{tokenNo}")
-    public ResponseEntity<Void>  deleteByTokenNo(@PathVariable int tokenNo){
 
-        tokenService.deleteToken(tokenNo);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    @PatchMapping("/done/{tokenId}")
+    public ResponseEntity<Token> markTokenDone(@PathVariable Long tokenId){
 
-
+       return new ResponseEntity<>(tokenService.markTokenDone(tokenId),HttpStatus.OK);
     }
 
-    @GetMapping("Position/{tokenId}")
+
+    @PatchMapping("/leave/{tokenId}")
+    public ResponseEntity<Void>  deleteByTokenNo(@PathVariable Long tokenId){
+
+        tokenService.markTokenInActive(tokenId);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
+    @GetMapping("/position/{tokenId}")
     public ResponseEntity<Long> findPosition(@PathVariable Long tokenId){
 
         Long Position=tokenService.findPosition(tokenId);

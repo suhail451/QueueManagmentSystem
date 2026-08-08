@@ -7,12 +7,10 @@ import com.QMS.QueueManagment.ADMIN.Service.AdminService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/api/v1/admin")
 
 public class AdminController {
 
@@ -23,7 +21,7 @@ public class AdminController {
     }
 
 
-    @PostMapping("/api/v1/admin")
+    @PostMapping
     public ResponseEntity<AdminResponse> createAdmin(@RequestBody AdminRequest adminRequest){
 
         AdminResponse myAdmin=adminService.createAdmin(adminRequest);
