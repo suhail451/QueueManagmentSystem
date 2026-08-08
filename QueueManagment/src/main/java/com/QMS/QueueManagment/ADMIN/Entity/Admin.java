@@ -23,6 +23,7 @@ public class Admin {
     private String name;
 
     private String compony;
+    private String password;
 
     @OneToOne(mappedBy = "admin")
     @JsonBackReference

@@ -1,4 +1,5 @@
-package com.QMS.QueueManagment.ADMIN.Dto;
+package com.QMS.QueueManagment.AUTH.Login;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,10 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminRequest {
+public class LoginDTO {
 
     private String name;
-    private String compony;
     private String password;
 
 

@@ -24,6 +24,7 @@ public class AdminController {
     @PostMapping
     public ResponseEntity<AdminResponse> createAdmin(@RequestBody AdminRequest adminRequest){
 
+//        adminRequest.getCompony();
         AdminResponse myAdmin=adminService.createAdmin(adminRequest);
 
         return new ResponseEntity<>(myAdmin, HttpStatus.CREATED);
