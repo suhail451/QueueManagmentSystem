@@ -3,6 +3,7 @@ package com.QMS.QueueManagment.SecurityConfig;
 import com.QMS.QueueManagment.AUTH.Filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,8 +30,13 @@ public class SecurityConfig {
 
                 // Configure endpoint permissions
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/queue/{id}").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admin").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/token/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/token/position/*").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/token/leave/*").permitAll()
+                        .anyRequest().authenticated()
+
                 )
 
                 // Set session management to stateless (disables default Spring login session)

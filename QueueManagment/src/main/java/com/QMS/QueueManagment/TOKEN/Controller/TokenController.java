@@ -23,9 +23,9 @@ public class TokenController {
     @PostMapping("/{queueId}")
     public ResponseEntity<Token> createToken(@PathVariable Long queueId){
 
-        Token mytoken=tokenService.createToken(queueId);
+        Token token=tokenService.createToken(queueId);
 
-        return new ResponseEntity<>(mytoken, HttpStatus.CREATED);
+        return new ResponseEntity<>(token, HttpStatus.CREATED);
     }
 
 
@@ -45,7 +45,7 @@ public class TokenController {
 
 
     @PatchMapping("/leave/{tokenId}")
-    public ResponseEntity<Void>  deleteByTokenNo(@PathVariable Long tokenId){
+    public ResponseEntity<Void>  markTokenInActive(@PathVariable Long tokenId){
 
         tokenService.markTokenInActive(tokenId);
 
@@ -56,9 +56,9 @@ public class TokenController {
     @GetMapping("/position/{tokenId}")
     public ResponseEntity<Long> findPosition(@PathVariable Long tokenId){
 
-        Long Position=tokenService.findPosition(tokenId);
+        Long position=tokenService.findPosition(tokenId);
 
-        return new ResponseEntity<>(Position,HttpStatus.OK);
+        return new ResponseEntity<>(position,HttpStatus.OK);
 
     }
 

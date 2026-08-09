@@ -28,15 +28,15 @@ public class QueueController {
 
     @GetMapping("/{adminId}")
     public ResponseEntity<Queue> getQueue(@PathVariable Long adminId){
-        Queue queue = queueService.getQueue(adminId);
+        Queue queue = queueService.getQueueByAdmin(adminId);
         return new ResponseEntity<>(queue, HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> closeQueue(@PathVariable Long id){
 
-       Boolean myStatus= queueService.closeQueue(id);
-        if(myStatus==true){
+       Boolean isQueueClosed= queueService.closeQueue(id);
+        if(isQueueClosed){
             throw new RuntimeException("Queue is not closed properly");
 
         }

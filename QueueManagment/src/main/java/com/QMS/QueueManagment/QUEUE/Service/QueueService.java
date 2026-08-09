@@ -42,7 +42,7 @@ public class QueueService {
     }
 
 //    Get Queue
-    public Queue getQueue(Long adminId){
+    public Queue getQueueByAdmin(Long adminId){
 
         String currentUsername=Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
 
