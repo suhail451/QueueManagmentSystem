@@ -17,57 +17,48 @@ import java.util.Collections;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    final JwtService jwtService;
+    private final JwtService jwtService;
 
     public JwtFilter(JwtService jwtService) {
         this.jwtService = jwtService;
     }
 
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
 
+        String header = request.getHeader("Authorization");
 
-        String header=request.getHeader("Authorization");
-
+        // Token Not Given or Invalid Header Format
         if (header == null || !header.startsWith("Bearer ")) {
-
-           filterChain.doFilter(request,response);
-           return;
+            filterChain.doFilter(request, response);
+            return;
         }
 
         String jwtToken = header.substring(7);
 
-        String username = jwtService.extractUserName(jwtToken);
+        try {
+            String username = jwtService.extractUserName(jwtToken);
 
-try{
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // steps 3-7 go inside here
-            if(jwtService.validateToken(jwtToken)){
-
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                username,
-                                null,
-                                Collections.emptyList()
-
-                        );
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (jwtService.validateToken(jwtToken, username)) {
+                    UsernamePasswordAuthenticationToken authToken =
+                            new UsernamePasswordAuthenticationToken(
+                                    username,
+                                    null,
+                                    Collections.emptyList()
+                            );
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().getAuthentication();
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                }
             }
+        } catch (Exception e) {
+            // Log token parsing failures (expired, malformed, invalid signature)
+            // Do not throw a RuntimeException here; continue filter chain so SecurityEntryPoint handles HTTP 401
+            logger.error("Cannot set user authentication: {}", e);
+        }
 
-        }}catch (Exception e){
-
-        throw new RuntimeException("not valid token");
+        filterChain.doFilter(request, response);
+    }
 }
-
-        filterChain.doFilter(request,response);
-
-    }
-
-
-
-
-    }
-
