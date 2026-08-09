@@ -21,20 +21,20 @@ public class QueueController {
 
 
 
-    @PostMapping("/{id}")
-    public ResponseEntity<QueueResponseDto> createQueue(@PathVariable Long id){
+    @PostMapping("/admin{adminId}")
+    public ResponseEntity<QueueResponseDto> createQueue(@PathVariable Long adminId){
 
-        Queue queue=queueService.createQueue(id);
+        Queue queue=queueService.createQueue(adminId);
         return new ResponseEntity<>(QueueMapper.toDto(queue), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{adminId}")
+    @GetMapping("/admin/{adminId}")
     public ResponseEntity<QueueResponseDto> getQueue(@PathVariable Long adminId){
         Queue queue = queueService.getQueueByAdmin(adminId);
         return new ResponseEntity<>(QueueMapper.toDto(queue), HttpStatus.OK);
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/close")
     public ResponseEntity<String> closeQueue(@PathVariable Long id){
 
        queueService.closeQueue(id);

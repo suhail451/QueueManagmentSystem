@@ -19,7 +19,7 @@ public class JwtService {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    public SecretKey getsecretKey(){
+    public SecretKey getSecretKey(){
 
         return Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
 
@@ -32,16 +32,16 @@ public class JwtService {
                 .subject(user)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis()+100*60*60))
-                .signWith(getsecretKey())
+                .signWith(getSecretKey())
                 .compact();
         return token;
     }
 
 
-    public Claims extractAllclaim(String token){
+    public Claims extractAllClaims(String token){
 
         return Jwts.parser()
-                .verifyWith(getsecretKey())
+                .verifyWith(getSecretKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -50,12 +50,12 @@ public class JwtService {
 
     public String extractUserName(String token){
         
-        return extractAllclaim(token).getSubject();
+        return extractAllClaims(token).getSubject();
         
 
     }
     public Date extractExpiry(String token){
-        return extractAllclaim(token).getExpiration();
+        return extractAllClaims(token).getExpiration();
     }
 
     public boolean isTokenExpired(String token){

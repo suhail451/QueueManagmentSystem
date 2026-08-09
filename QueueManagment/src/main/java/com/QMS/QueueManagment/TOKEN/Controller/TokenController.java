@@ -7,7 +7,6 @@ import com.QMS.QueueManagment.TOKEN.Service.TokenService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -20,7 +19,7 @@ public class TokenController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/{queueId}")
+    @PostMapping("/queue/{queueId}")
     public ResponseEntity<ResponseDto> createToken(@PathVariable Long queueId){
 
         Token token=tokenService.createToken(queueId);
@@ -29,7 +28,7 @@ public class TokenController {
     }
 
 
-    @GetMapping("/{queueId}")
+    @GetMapping("/queue/{queueId}")
     public ResponseEntity<List<ResponseDto>> tokenByQueue(@PathVariable Long queueId){
         List<ResponseDto> list = tokenService.getTokenByQueue(queueId)
                 .stream()

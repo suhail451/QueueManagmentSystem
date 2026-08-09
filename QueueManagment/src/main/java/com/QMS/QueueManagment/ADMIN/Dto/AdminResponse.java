@@ -14,7 +14,7 @@ public class AdminResponse {
 
     private Long id;
     private String name;
-    private String Compony;
+    private String Company;
 
 
 

@@ -61,7 +61,7 @@ public class QueueService {
     }
 
 //    Soft Delete Queue
-    public Boolean closeQueue(Long queueId){
+    public void closeQueue(Long queueId){
 
         Admin currentAdmin = getCurrentAdmin();
 
@@ -78,7 +78,8 @@ public class QueueService {
 
         myQueue.setIsOpen(false);
 
-        return queueRepo.save(myQueue).getIsOpen();
+       queueRepo.save(myQueue);
+
     }
 
 //    Delete Queue
@@ -99,8 +100,7 @@ public class QueueService {
         queueRepo.delete(queue);
     }
 
-//    Resolves the currently authenticated admin from the SecurityContext.
-//    Pulled out since every ownership-checked method needs this same lookup.
+// for resource based check
     private Admin getCurrentAdmin(){
 
         String currentUsername = Objects.requireNonNull(

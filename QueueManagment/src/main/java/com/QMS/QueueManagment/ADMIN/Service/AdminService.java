@@ -26,7 +26,7 @@ public class AdminService {
 
         Admin admin=new Admin();
         admin.setName(adminRequest.getName());
-        admin.setCompony(adminRequest.getCompony());
+        admin.setCompany(adminRequest.getCompany());
 
         String hashedPassword=passwordEncoder.encode(adminRequest.getPassword());
         admin.setPassword(hashedPassword);
@@ -35,7 +35,7 @@ public class AdminService {
 
         AdminResponse adminResponse=new AdminResponse();
         adminResponse.setName(myadmin.getName());
-        adminResponse.setCompony(admin.getCompony());
+        adminResponse.setCompany(admin.getCompany());
         adminResponse.setId(admin.getId());
 
         return adminResponse;
