@@ -1,5 +1,7 @@
 package com.QMS.QueueManagment.QUEUE.Controller;
 
+import com.QMS.QueueManagment.QUEUE.Dto.QueueMapper;
+import com.QMS.QueueManagment.QUEUE.Dto.QueueResponseDto;
 import com.QMS.QueueManagment.QUEUE.Entity.Queue;
 import com.QMS.QueueManagment.QUEUE.Service.QueueService;
 import org.springframework.http.HttpStatus;
@@ -20,26 +22,22 @@ public class QueueController {
 
 
     @PostMapping("/{id}")
-    public ResponseEntity<Queue> createQueue(@PathVariable Long id){
+    public ResponseEntity<QueueResponseDto> createQueue(@PathVariable Long id){
 
         Queue queue=queueService.createQueue(id);
-        return new ResponseEntity<>(queue, HttpStatus.CREATED);
+        return new ResponseEntity<>(QueueMapper.toDto(queue), HttpStatus.CREATED);
     }
 
     @GetMapping("/{adminId}")
-    public ResponseEntity<Queue> getQueue(@PathVariable Long adminId){
+    public ResponseEntity<QueueResponseDto> getQueue(@PathVariable Long adminId){
         Queue queue = queueService.getQueueByAdmin(adminId);
-        return new ResponseEntity<>(queue, HttpStatus.OK);
+        return new ResponseEntity<>(QueueMapper.toDto(queue), HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> closeQueue(@PathVariable Long id){
 
-       Boolean isQueueClosed= queueService.closeQueue(id);
-        if(isQueueClosed){
-            throw new RuntimeException("Queue is not closed properly");
-
-        }
+       queueService.closeQueue(id);
 
         return new ResponseEntity<>("Queue Closed",HttpStatus.OK);
     }
