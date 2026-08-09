@@ -10,6 +10,7 @@ import com.QMS.QueueManagment.exception.ResourceNotFoundException;
 import com.QMS.QueueManagment.exception.UnauthorizedAccessException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -20,17 +21,19 @@ import java.util.Objects;
 public class QueueService {
 
 
-    private static Logger logger= LoggerFactory.getLogger(QueueService.class);
+    private static final Logger logger= LoggerFactory.getLogger(QueueService.class);
 
 
     final AdminService adminService;
     final QueueRepo queueRepo;
     final AdminRepo adminRepo;
+    final RedisTemplate<String,String> redisTemplate;
 
-    public QueueService(AdminService adminService, QueueRepo queueRepo, AdminRepo adminRepo) {
+    public QueueService(AdminService adminService, QueueRepo queueRepo, AdminRepo adminRepo, RedisTemplate<String, String> redisTemplate) {
         this.adminService = adminService;
         this.queueRepo = queueRepo;
         this.adminRepo = adminRepo;
+        this.redisTemplate = redisTemplate;
     }
 
 //    Create Queue
@@ -131,6 +134,7 @@ public class QueueService {
         admin.setQueue(null);   // break the back-reference first
 
         queueRepo.delete(queue);
+        redisTemplate.delete("queue:" + queueId + ":counter");
         logger.info("Queue deleted from database");
     }
 

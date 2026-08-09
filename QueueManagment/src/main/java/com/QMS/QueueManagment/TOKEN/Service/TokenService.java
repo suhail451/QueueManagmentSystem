@@ -48,7 +48,7 @@ public class TokenService {
 
             int currentCounter = (maxTokenNo == null) ? 0 : maxTokenNo;
 
-            redisTemplate.opsForValue().set(key, String.valueOf(currentCounter));
+            redisTemplate.opsForValue().setIfAbsent(key, String.valueOf(currentCounter));
         }
 
         int nextToken=redisTemplate.opsForValue().increment(key).intValue();
