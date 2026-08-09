@@ -1,5 +1,4 @@
-package com.QMS.QueueManagment.ADMIN.Dto;
-
+package com.QMS.QueueManagment.QUEUE.Dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,12 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AdminResponse {
+public class QueueResponseDto {
 
     private Long id;
-    private String name;
-    private String Company;
-
-
+    private Boolean isOpen;
+    private Long adminId;
 
 }

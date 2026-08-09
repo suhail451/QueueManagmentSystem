@@ -5,6 +5,9 @@ import com.QMS.QueueManagment.ADMIN.Repository.AdminRepo;
 import com.QMS.QueueManagment.ADMIN.Service.AdminService;
 import com.QMS.QueueManagment.QUEUE.Entity.Queue;
 import com.QMS.QueueManagment.QUEUE.Repository.QueueRepo;
+import com.QMS.QueueManagment.exception.InvalidStateException;
+import com.QMS.QueueManagment.exception.ResourceNotFoundException;
+import com.QMS.QueueManagment.exception.UnauthorizedAccessException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +31,10 @@ public class QueueService {
     public Queue createQueue(Long adminId){
 
         Admin admin=adminService.findAdmin(adminId)
-                .orElseThrow(()-> new RuntimeException("Admin not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Admin not found"));
 
         if(admin.getQueue()!=null){
-            throw new RuntimeException("Queue Already exist");
+            throw new InvalidStateException("Queue already exists for this admin");
         }
         Queue queue=new Queue();
         queue.setAdmin(admin);
@@ -44,59 +47,51 @@ public class QueueService {
 //    Get Queue
     public Queue getQueueByAdmin(Long adminId){
 
-        String currentUsername=Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        Admin currentAdmin = getCurrentAdmin();
 
-        Admin currentAdmin=adminRepo.findByName(currentUsername);
         Queue queue=queueRepo.findByAdminId(adminId)
-                .orElseThrow(()->new RuntimeException("Queue not found"));
+                .orElseThrow(()->new ResourceNotFoundException("Queue not found"));
 
         if(!queue.getAdmin().getId().equals(currentAdmin.getId())){
-            throw new RuntimeException("access denied");
+            throw new UnauthorizedAccessException("You do not have access to this queue");
         }
-
 
         return queue;
 
     }
 
 //    Soft Delete Queue
-    public Boolean closeQueue(Long queueId){
+    public void closeQueue(Long queueId){
 
-        String currentUsername= Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-
-        Admin currentAdmin=adminRepo.findByName(currentUsername);
+        Admin currentAdmin = getCurrentAdmin();
 
         Queue myQueue=queueRepo.findById(queueId)
-                .orElseThrow(()-> new RuntimeException("Queue not found"));
+                .orElseThrow(()-> new ResourceNotFoundException("Queue not found"));
 
         if (!myQueue.getAdmin().getId().equals(currentAdmin.getId())) {
-            throw new RuntimeException("You do not own this queue");
+            throw new UnauthorizedAccessException("You do not own this queue");
         }
 
-        if(myQueue.getIsOpen()== false){
-
-            throw new RuntimeException("Queue is already closed");
-
+        if(!myQueue.getIsOpen()){
+            throw new InvalidStateException("Queue is already closed");
         }
+
         myQueue.setIsOpen(false);
 
-        return queueRepo.save(myQueue).getIsOpen();
+       queueRepo.save(myQueue);
+
     }
 
 //    Delete Queue
     public void deleteQueue(Long queueId){
 
-        String currentUsername= Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-        Admin currentAdmin=adminRepo.findByName(currentUsername);
-
+        Admin currentAdmin = getCurrentAdmin();
 
         Queue queue = queueRepo.findById(queueId)
-                .orElseThrow(() -> new RuntimeException("Queue not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Queue not found"));
 
         if(!queue.getAdmin().getId().equals(currentAdmin.getId())){
-            throw new RuntimeException("acces denied");
+            throw new UnauthorizedAccessException("You do not own this queue");
         }
 
         Admin admin = queue.getAdmin();
@@ -105,5 +100,19 @@ public class QueueService {
         queueRepo.delete(queue);
     }
 
+// for resource based check
+    private Admin getCurrentAdmin(){
+
+        String currentUsername = Objects.requireNonNull(
+                SecurityContextHolder.getContext().getAuthentication()).getName();
+
+        Admin admin = adminRepo.findByName(currentUsername);
+
+        if (admin == null) {
+            throw new ResourceNotFoundException("Authenticated admin not found");
+        }
+
+        return admin;
+    }
 
 }

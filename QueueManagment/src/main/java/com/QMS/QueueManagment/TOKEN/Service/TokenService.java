@@ -5,11 +5,11 @@ import com.QMS.QueueManagment.QUEUE.Entity.Queue;
 import com.QMS.QueueManagment.QUEUE.Repository.QueueRepo;
 import com.QMS.QueueManagment.TOKEN.Entity.Token;
 import com.QMS.QueueManagment.TOKEN.Repository.TokenRepo;
-import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener;
+import com.QMS.QueueManagment.exception.InvalidStateException;
+import com.QMS.QueueManagment.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TokenService {
@@ -26,14 +26,15 @@ public class TokenService {
     public Token createToken(Long queueId){
 
         Queue queue=queueRepo.findById(queueId)
-                .orElseThrow(()-> new RuntimeException("Queue not found"));
-        if(queue.getIsOpen()==false){
-            throw new RuntimeException("Queue is closed ");
+                .orElseThrow(()-> new ResourceNotFoundException("Queue not found"));
+
+        if(!queue.getIsOpen()){
+            throw new InvalidStateException("Queue is closed");
         }
 
-        Integer MaxToken_no=tokenRepo.findMaxTokenNoByQueueId(queueId);
+        Integer maxTokenNo=tokenRepo.findMaxTokenNoByQueueId(queueId);
 
-        int nextToken=(MaxToken_no==null)?1:MaxToken_no+1;
+        int nextToken=(maxTokenNo==null)?1:maxTokenNo+1;
 
         Token token=new Token();
         token.setQueue(queue);
@@ -41,58 +42,43 @@ public class TokenService {
         token.setStatus("Waiting");
 
         return tokenRepo.save(token);
-
-
     }
 
 //    Mark token done
-
     public Token markTokenDone(Long tokenId){
-       Token myToken= tokenRepo.findById(tokenId)
-               .orElseThrow(()->new RuntimeException("Not found"));
+       Token token= tokenRepo.findById(tokenId)
+               .orElseThrow(()->new ResourceNotFoundException("Token not found"));
 
-       if(myToken.getStatus().equals("Waiting")){
-           myToken.setStatus("Done");
-
+       if(token.getStatus().equals("Waiting")){
+           token.setStatus("Done");
        }
 
-       return tokenRepo.save(myToken);
-
+       return tokenRepo.save(token);
     }
 
 //    Get Token
-
     public List<Token> getTokenByQueue(Long queueId){
 
         return tokenRepo.findTokenByQueueId(queueId);
-
     }
 
-
-//Mark token InActive
+//    Mark token InActive
     public void markTokenInActive(Long tokenId){
 
-       Token mytoken = tokenRepo.findById(tokenId)
-               .orElseThrow(() -> new RuntimeException("Token Notfound"));
-       mytoken.setStatus("InActive");
-       tokenRepo.save(mytoken);
-
+       Token token = tokenRepo.findById(tokenId)
+               .orElseThrow(() -> new ResourceNotFoundException("Token not found"));
+       token.setStatus("InActive");
+       tokenRepo.save(token);
     }
 
 //    Find Position
     public Long findPosition(Long tokenId){
 
         Token token = tokenRepo.findById(tokenId)
-                .orElseThrow(() -> new RuntimeException("Token not found"));
-
+                .orElseThrow(() -> new ResourceNotFoundException("Token not found"));
 
       return  tokenRepo.countByQueueIdAndStatusAndTokenNoLessThan(
-              token.getQueue().getId(), "Waiting",token.getTokenNo());
-
-
-
+              token.getQueue().getId(), "Waiting", token.getTokenNo());
     }
-
-
 
 }

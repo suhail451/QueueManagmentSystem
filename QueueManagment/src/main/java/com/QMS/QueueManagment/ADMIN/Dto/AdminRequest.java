@@ -12,7 +12,7 @@ import lombok.Setter;
 public class AdminRequest {
 
     private String name;
-    private String compony;
+    private String company;
     private String password;
 
 

@@ -22,7 +22,7 @@ public class Admin {
 
     private String name;
 
-    private String compony;
+    private String company;
     private String password;
 
     @OneToOne(mappedBy = "admin")

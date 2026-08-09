@@ -1,13 +1,12 @@
 package com.QMS.QueueManagment.TOKEN.Controller;
 
+import com.QMS.QueueManagment.TOKEN.Dto.ResponseDto;
+import com.QMS.QueueManagment.TOKEN.Dto.TokenMapper;
 import com.QMS.QueueManagment.TOKEN.Entity.Token;
-import com.QMS.QueueManagment.TOKEN.Repository.TokenRepo;
 import com.QMS.QueueManagment.TOKEN.Service.TokenService;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -20,27 +19,30 @@ public class TokenController {
         this.tokenService = tokenService;
     }
 
-    @PostMapping("/{queueId}")
-    public ResponseEntity<Token> createToken(@PathVariable Long queueId){
+    @PostMapping("/queue/{queueId}")
+    public ResponseEntity<ResponseDto> createToken(@PathVariable Long queueId){
 
         Token token=tokenService.createToken(queueId);
 
-        return new ResponseEntity<>(token, HttpStatus.CREATED);
+        return new ResponseEntity<>(TokenMapper.toDto(token), HttpStatus.CREATED);
     }
 
 
-    @GetMapping("/{queueId}")
-    public ResponseEntity<List<Token>> tokenByQueue(@PathVariable Long queueId){
-        List<Token> list=tokenService.getTokenByQueue(queueId);
+    @GetMapping("/queue/{queueId}")
+    public ResponseEntity<List<ResponseDto>> tokenByQueue(@PathVariable Long queueId){
+        List<ResponseDto> list = tokenService.getTokenByQueue(queueId)
+                .stream()
+                .map(TokenMapper::toDto)
+                .toList();
 
         return new ResponseEntity<>(list,HttpStatus.OK);
     }
 
 
     @PatchMapping("/done/{tokenId}")
-    public ResponseEntity<Token> markTokenDone(@PathVariable Long tokenId){
+    public ResponseEntity<ResponseDto> markTokenDone(@PathVariable Long tokenId){
 
-       return new ResponseEntity<>(tokenService.markTokenDone(tokenId),HttpStatus.OK);
+       return new ResponseEntity<>(TokenMapper.toDto(tokenService.markTokenDone(tokenId)),HttpStatus.OK);
     }
 
 
