@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
 
 /**
  * Catches exceptions thrown anywhere in the app and converts them into
@@ -35,6 +38,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidStateException.class)
     public ResponseEntity<ErrorResponse> handleInvalidState(InvalidStateException ex) {
         return buildResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateUserNameException.class)
+    public ResponseEntity<ErrorResponse> duplicateCheck(DuplicateUserNameException ex){
+        return buildResponse(HttpStatus.CONFLICT,ex.getMessage());
+
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationException(
+            MethodArgumentNotValidException ex) {
+
+        String message = Objects.requireNonNull(ex.getBindingResult()
+                        .getFieldError())
+                .getDefaultMessage();
+
+        return ResponseEntity
+                .badRequest()
+                .body(message);
     }
 
     // Safety net — catches anything not explicitly handled above so the

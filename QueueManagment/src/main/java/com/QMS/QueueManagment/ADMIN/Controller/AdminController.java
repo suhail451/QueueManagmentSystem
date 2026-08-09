@@ -4,6 +4,7 @@ package com.QMS.QueueManagment.ADMIN.Controller;
 import com.QMS.QueueManagment.ADMIN.Dto.AdminRequest;
 import com.QMS.QueueManagment.ADMIN.Dto.AdminResponse;
 import com.QMS.QueueManagment.ADMIN.Service.AdminService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
@@ -22,7 +23,7 @@ public class AdminController {
 
 
     @PostMapping
-    public ResponseEntity<AdminResponse> createAdmin(@RequestBody AdminRequest adminRequest){
+    public ResponseEntity<AdminResponse> createAdmin(@Valid @RequestBody AdminRequest adminRequest){
 
 //        adminRequest.getCompony();
         AdminResponse myAdmin=adminService.createAdmin(adminRequest);

@@ -42,6 +42,15 @@ public class QueueController {
         return new ResponseEntity<>("Queue Closed",HttpStatus.OK);
     }
 
+
+    @PatchMapping("/{id}/open")
+    public ResponseEntity<String> openQueue(@PathVariable Long id){
+
+        queueService.OpenQueue(id);
+
+        return new ResponseEntity<>("Queue Opened",HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id){
         queueService.deleteQueue(id);

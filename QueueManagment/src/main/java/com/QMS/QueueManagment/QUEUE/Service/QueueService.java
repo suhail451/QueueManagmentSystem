@@ -8,6 +8,8 @@ import com.QMS.QueueManagment.QUEUE.Repository.QueueRepo;
 import com.QMS.QueueManagment.exception.InvalidStateException;
 import com.QMS.QueueManagment.exception.ResourceNotFoundException;
 import com.QMS.QueueManagment.exception.UnauthorizedAccessException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,10 @@ import java.util.Objects;
 
 @Service
 public class QueueService {
+
+
+    private static Logger logger= LoggerFactory.getLogger(QueueService.class);
+
 
     final AdminService adminService;
     final QueueRepo queueRepo;
@@ -40,7 +46,7 @@ public class QueueService {
         queue.setAdmin(admin);
         queue=queueRepo.save(queue);
         admin.setQueue(queue);
-
+            logger.info("Queue created successfully");
         return queue;
     }
 
@@ -78,11 +84,38 @@ public class QueueService {
 
         myQueue.setIsOpen(false);
 
+
        queueRepo.save(myQueue);
+       logger.info("Queue closed successfully");
 
     }
 
-//    Delete Queue
+
+    public void OpenQueue(Long queueId){
+
+        Admin currentAdmin = getCurrentAdmin();
+
+        Queue myQueue=queueRepo.findById(queueId)
+                .orElseThrow(()-> new ResourceNotFoundException("Queue not found"));
+
+        if (!myQueue.getAdmin().getId().equals(currentAdmin.getId())) {
+            throw new UnauthorizedAccessException("You do not own this queue");
+        }
+
+        if(myQueue.getIsOpen()){
+            throw new InvalidStateException("Queue is already opened");
+        }
+
+        myQueue.setIsOpen(true);
+
+
+        queueRepo.save(myQueue);
+        logger.info("Queue Opened successfully");
+
+    }
+
+
+    //    Delete Queue
     public void deleteQueue(Long queueId){
 
         Admin currentAdmin = getCurrentAdmin();
@@ -98,6 +131,7 @@ public class QueueService {
         admin.setQueue(null);   // break the back-reference first
 
         queueRepo.delete(queue);
+        logger.info("Queue deleted from database");
     }
 
 // for resource based check
