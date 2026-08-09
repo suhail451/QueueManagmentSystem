@@ -23,7 +23,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http)  {
         http
                 // Disable CSRF since REST APIs with JWT are stateless
                 .csrf(AbstractHttpConfigurer::disable)
@@ -31,6 +31,7 @@ public class SecurityConfig {
                 // Configure endpoint permissions
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/token/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/token/position/*").permitAll()

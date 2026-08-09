@@ -9,6 +9,7 @@ import com.QMS.QueueManagment.exception.InvalidStateException;
 import com.QMS.QueueManagment.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,14 +17,16 @@ import java.util.List;
 @Service
 public class TokenService {
 
-    private static Logger logger= LoggerFactory.getLogger(TokenService.class)
+    private static final Logger logger= LoggerFactory.getLogger(TokenService.class);
 
     final QueueRepo queueRepo;
     final TokenRepo tokenRepo;
+    final RedisTemplate<String,String> redisTemplate;
 
-    public TokenService(QueueRepo queueRepo, TokenRepo tokenRepo) {
+    public TokenService(QueueRepo queueRepo, TokenRepo tokenRepo, RedisTemplate<String,String> redisTemplate) {
         this.queueRepo = queueRepo;
         this.tokenRepo = tokenRepo;
+        this.redisTemplate = redisTemplate;
     }
 
 //    Create token
@@ -36,9 +39,19 @@ public class TokenService {
             throw new InvalidStateException("Queue is closed");
         }
 
-        Integer maxTokenNo=tokenRepo.findMaxTokenNoByQueueId(queueId);
+        String key="queue:"+queueId+":counter";
+        Boolean exists = redisTemplate.hasKey(key);
 
-        int nextToken=(maxTokenNo==null)?1:maxTokenNo+1;
+        if (Boolean.FALSE.equals(exists)) {
+
+            Integer maxTokenNo = tokenRepo.findMaxTokenNoByQueueId(queueId);
+
+            int currentCounter = (maxTokenNo == null) ? 0 : maxTokenNo;
+
+            redisTemplate.opsForValue().set(key, String.valueOf(currentCounter));
+        }
+
+        int nextToken=redisTemplate.opsForValue().increment(key).intValue();
 
         Token token=new Token();
         token.setQueue(queue);
