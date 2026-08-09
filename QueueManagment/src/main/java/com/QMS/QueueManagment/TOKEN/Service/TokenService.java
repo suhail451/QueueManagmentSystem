@@ -7,12 +7,16 @@ import com.QMS.QueueManagment.TOKEN.Entity.Token;
 import com.QMS.QueueManagment.TOKEN.Repository.TokenRepo;
 import com.QMS.QueueManagment.exception.InvalidStateException;
 import com.QMS.QueueManagment.exception.ResourceNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class TokenService {
+
+    private static Logger logger= LoggerFactory.getLogger(TokenService.class)
 
     final QueueRepo queueRepo;
     final TokenRepo tokenRepo;
@@ -53,7 +57,9 @@ public class TokenService {
            token.setStatus("Done");
        }
 
-       return tokenRepo.save(token);
+       Token markedToken= tokenRepo.save(token);
+       logger.info("Token marked done!");
+       return markedToken;
     }
 
 //    Get Token
